@@ -280,7 +280,7 @@ viewer.addHandler("open", () => {
 async function saveMarkerToDatabase(marker) {
     console.log("Sending marker data:", marker);  // Add this line to debug
     try {
-        const response = await fetch('http://localhost:3000/save-maping', {
+        const response = await fetch('https://myapp-qlbv.onrender.com/save-maping', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(marker)
@@ -295,7 +295,7 @@ async function saveMarkerToDatabase(marker) {
 // Function to load markers from the database
 async function loadMarkersFromDatabase() {
     try {
-        const response = await fetch('http://localhost:3000/get-markers');
+        const response = await fetch('https://myapp-qlbv.onrender.com/get-markers');
         const markersFromDb = await response.json();
         markersFromDb.forEach(markerData => {
             createMarker(markerData.x_coordinate, markerData.y_coordinate, markerData.tooltip, markerData.color, false);
