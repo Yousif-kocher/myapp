@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"> <!-- Google Font -->
+
+  <title>Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #cbdad2;
+      overflow-x: hidden; /* Prevent horizontal scrolling */
+    }
+    header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      background-color: #45bb2e;
+      color: white;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .navbar {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      display: flex;
+      gap: 20px;
+      list-style-type: none;
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideIn 1s forwards;
+    }
+    .navbar li {
+      cursor: pointer;
+      padding: 10px 20px;
+      background-color: #244645;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+    }
+    .navbar li:hover {
+      background-color: #dcd8eb;
+    }
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    .content {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      flex: 1;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background-color: rgb(128, 147, 231);
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      text-align: center;
+      width: 220px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .card h3 {
+      margin: 0;
+      color: #333;
+      font-size: 18px;
+    }
+    .footer {
+      background-color: #4b8365;
+      color: rgb(255, 251, 251);
+      text-align: left;
+      padding: 10px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-left, .footer-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    .footer-left p, .footer-right p {
+      margin: 0;
+    }
+    .footer-left i, .footer-right i {
+      margin-right: 10px; /* Space between icon and text */
+    }
+    .footer-left p, .footer-right p {
+      font-size: 18px;
+    }
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px; /* Space between the image and the name */
+    }
+
+    /* Flexbox to align footer-right items vertically */
+    .footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 250px; /* Limit width of footer-right */
+  word-wrap: break-word;
+}
+
+    /* Customize icons */
+    .footer-left i, .footer-right i {
+      color: #f39c12; /* Yellow color for icons */
+      font-size: 18px; /* Increase icon size */
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    p{
+      font-size: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Dashboard</h1>
+  </header>
+
+  <!-- Navbar with animation -->
+  <ul class="navbar">
+    <li><a href="map.html">Mapping</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="settings.html">Settings</a></li>
+    <li><a href="index.html">Logout</a></li>
+  </ul>
+  
+  <!-- Main content -->
+  <div class="content">
+    <!-- Total Contracts Card -->
+
+
+    <div class="card">
+      <i class="fas fa-map-marked-alt" style="font-size: 50px; color: #333; margin: 0 auto;"></i>
+      <h3> قطعة عه دري بو فروتنة</h3>
+      <p id="selling-count">Loading...</p>
+    </div>
+  
+
+    <!-- Total Properties Card -->
+    <div class="card">
+    <i class="fas fa-check-circle" style="font-size: 50px; color: green; margin: 0 auto;"></i>
+    <h3> قطعة عه ردي هاتينة فروتن </h3>
+    <p id="house-for-sell-count">Loading...</p>
+  </div>
+
+
+    <!-- Sold Card -->
+
+    <div class="card">
+      <i class="fas fa-home" style="font-size: 50px; color: blue; margin: 0 auto;"></i>
+      <h3> خــاني بو فروتنة</h3>
+      <p id="building-for-green-count">Loading...</p>
+    </div>
+    
+    
+    
+    <!-- Building for Green Card -->
+    <div class="card">
+      <i class="fas fa-sticky-note" style="font-size: 50px; color: #f39c12; margin: 0 auto;"></i>
+      <h3> ملاحظـــات</h3>
+      <p id="sold-count">Loading...</p>
+    </div>
+
+   
+
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-left">
+      <p><i class="fas fa-map-marker-alt"></i> Address: Duhok/Shaikhan</p>
+      <p><i class="fas fa-phone-alt"></i> Phone: +964 7508935651</p>
+      <p><i class="fas fa-building"></i> مكتب عقارات كوجر</p>
+      <p><i class="fas fa-home"></i> لشـراء و بيــع الاراضــي و بيوت السكنية</p>
+    </div>
+    <div class="footer-right">
+      <img src="image/Jiyad.jpg" alt="Profile Picture" class="profile-img">
+      <p>Jiyad Abdullsalam Abdullah</p>
+    </div>
+  </footer>
+  
+
+  <script>
+    // Fetch counts from API
+    $.ajax({
+      url: 'http://localhost:3000/get-marker-counts',
+      method: 'GET',
+      success: function(data) {
+        console.log('Data received from server:', data); // Log the data to check the response
+        $('#selling-count').text(data.red_count);
+        $('#house-for-sell-count').text(data.blue_count);
+        $('#sold-count').text(data.black_count);
+        $('#building-for-green-count').text(data.green_count);
+      },
+      error: function(error) {
+        console.error('Error fetching counts:', error);
+        alert('Failed to load counts.');
+      }
+    });
+  </script>
+
+</body>
+</html>
