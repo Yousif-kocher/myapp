@@ -166,12 +166,13 @@
             <div id="viewer"></div>
     
             <!-- Back to Dashboard Button -->
-            <a href="dashboard.html" class="back-button">Back to Dashboard</a>
+            <a href="Dashboard.html" class="back-button">Back to Dashboard</a>
         </div>
     
         <script>
             // Initialize OpenSeadragon viewer
-           // Initialize OpenSeadragon viewer
+ // Initialize OpenSeadragon viewer
+// Initialize OpenSeadragon viewer
 let viewer = OpenSeadragon({
     id: "viewer",
     prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
@@ -215,7 +216,8 @@ function createMarker(x, y, tooltipText, color, save = true) {
         e.stopPropagation();
         const confirmDelete = confirm("Do you want to delete this marker?");
         if (confirmDelete) {
-            deleteMarker(marker);
+            deleteMarker(marker); // Remove marker from viewer
+            deleteMarkerFromDatabase(marker.dataset.x, marker.dataset.y); // Remove marker from database
         }
     });
 
@@ -280,7 +282,7 @@ viewer.addHandler("open", () => {
 async function saveMarkerToDatabase(marker) {
     console.log("Sending marker data:", marker);  // Add this line to debug
     try {
-        const response = await fetch('https://myapp-qlbv.onrender.com/save-maping', {
+        const response = await fetch('http://localhost:3000/save-maping', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(marker)
@@ -295,7 +297,7 @@ async function saveMarkerToDatabase(marker) {
 // Function to load markers from the database
 async function loadMarkersFromDatabase() {
     try {
-        const response = await fetch('https://myapp-qlbv.onrender.com/get-markers');
+        const response = await fetch('http://localhost:3000/get-markers');
         const markersFromDb = await response.json();
         markersFromDb.forEach(markerData => {
             createMarker(markerData.x_coordinate, markerData.y_coordinate, markerData.tooltip, markerData.color, false);
@@ -305,6 +307,44 @@ async function loadMarkersFromDatabase() {
     }
 }
 
+// Function to delete marker from the database and the viewer
+async function deleteMarkerFromDatabase(x, y) {
+    // Round to 3 decimal places before sending
+    const roundedX = Math.round(x * 1000) / 1000;
+    const roundedY = Math.round(y * 1000) / 1000;
+
+    console.log('Rounded coordinates sent to server:', { x: roundedX, y: roundedY });
+
+    try {
+        const response = await fetch('http://localhost:3000/delete-marker', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ x: roundedX, y: roundedY })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete marker from database');
+        }
+
+        const data = await response.json();
+        if (data.message === 'Marker deleted successfully') {
+            console.log('Marker successfully deleted from database');
+        } else {
+            console.error('Error deleting marker from database:', data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Function to remove marker from the viewer
+function deleteMarker(marker) {
+    // Remove the marker from the viewer
+    marker.remove();
+}
+
 // Update marker positions whenever the viewer zooms or pans
 viewer.addHandler("animation", () => {
     const markers = document.querySelectorAll(".marker");
@@ -312,6 +352,8 @@ viewer.addHandler("animation", () => {
         updateMarkerPosition(marker); // Recalculate position for each marker
     });
 });
+
+
 
         </script>
     </body>
