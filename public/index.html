@@ -116,7 +116,7 @@
         contentType: 'application/json',
         data: JSON.stringify({ username, password }),
         success: function(response) {
-          window.location.href = 'dashboard.html'; // Redirect on success
+          window.location.href = 'Dashboard.html'; // Redirect on success
         },
         error: function(xhr) {
           $('#errorMessage').text(xhr.responseJSON ? xhr.responseJSON.message : 'Access Denied').show(); // Show error
