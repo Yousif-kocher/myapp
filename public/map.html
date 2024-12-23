@@ -141,226 +141,179 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>مكــتب كوجـــر للعــقارات</h1>
-    </header>
-
-    <div id="container">
-        <!-- Color Selection Section -->
-        <div class="color-selection">
-            <label id="red"><input type="radio" name="markerColor" value="red" checked>  قطعه عه ردي بو فروتنة </label>
-            <label id="blue"><input type="radio" name="markerColor" value="blue"> قطعة عه ردي هاتية فروتن </label>
-            <label id="green"><input type="radio" name="markerColor" value="green">قطــعة ســند </label>
-            <label id="black"><input type="radio" name="markerColor" value="black">ملاحظــات</label>
-            <label id="orange"><input type="radio" name="markerColor" value="orange">نيف قطــة</label>
-            <label id="pink"><input type="radio" name="markerColor" value="pink">قطــعة عــدم </label>
-        </div>
-
-        <!-- Map Viewer -->
-        <div id="viewer"></div>
-
-        <!-- Back to Dashboard Button -->
-        <a href="Dashboard.html" class="back-button">Back to Dashboard</a>
-    </div>
-
-    <script>
-        // Initialize OpenSeadragon viewer
-        let viewer = OpenSeadragon({
-            id: "viewer",
-            prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
-            tileSources: {
-                type: 'image',
-                url: "image/compressed_output.jpg"
-            },
-            showNavigator: true,
-            animationTime: 0.5,
-            blendTime: 0.1,
-            constrainDuringPan: true,
-            maxZoomPixelRatio: 2,
-            minZoomImageRatio: 0.5,
-            zoomPerClick: 2,
-        });
-
-        // Rest of the JavaScript for markers...
-         // To store marker data in memory
-         const markers = [];
+    <body>
+        <header>
+            <h1>مكــتب كوجـــر للعــقارات</h1>
+        </header>
     
-    // Function to get selected color for markers
-    function getSelectedColor() {
-        const colorInput = document.querySelector('input[name="markerColor"]:checked');
-        return colorInput ? colorInput.value : "red"; // Default to red
-    }
-
-    // Function to save marker to database
-    async function saveMarkerToDatabase(marker) {
-console.log("Sending marker data:", marker);  // Add this line to debug
-try {
-    const response = await fetch('https://myapp-qlbv.onrender.com/save-maping', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(marker)
-    });
-    const result = await response.json();
-    console.log(result.message);
-} catch (error) {
-    console.error('Error saving marker:', error);
-}
-}
-
-
-    // Function to load markers from the database
-    async function loadMarkersFromDatabase() {
-        try {
-            const response = await fetch('https://myapp-qlbv.onrender.com/get-markers');
-            const markersFromDb = await response.json();
-            markersFromDb.forEach(markerData => {
-                createMarker(markerData.x_coordinate, markerData.y_coordinate, markerData.tooltip, markerData.color, false);
-            });
-        } catch (error) {
-            console.error('Error loading markers:', error);
-        }
-    }
-
-    // Function to create a marker
-    function createMarker(x, y, tooltipText, color, save = true) {
-        const marker = document.createElement("div");
-        marker.classList.add("marker");
-        marker.dataset.x = x;
-        marker.dataset.y = y;
-        marker.style.backgroundColor = color;
-
-        // Tooltip for the marker
-        if (tooltipText) {
-            const tooltip = document.createElement("div");
-            tooltip.classList.add("marker-tooltip");
-            tooltip.textContent = tooltipText;
-            marker.appendChild(tooltip);
-        }
-
-        // Marker click handler to delete the marker
-        marker.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const confirmDelete = confirm("Do you want to delete this marker?");
-            if (confirmDelete) {
-                deleteMarker(marker);
-            }
-        });
-
-        // Append the marker to the viewer
-        document.getElementById("viewer").appendChild(marker);
-        updateMarkerPosition(marker);
-
-        // Save to the database if needed
-        if (save) {
-            const markerData = { x, y, tooltip: tooltipText, color };
-            saveMarkerToDatabase(markerData); // Save to database
-        }
-    }
-
-    // Function to delete a marker
-   // Function to delete a marker
-// Function to delete a marker
-function deleteMarker(marker) {
-const x = parseFloat(marker.dataset.x); // Get x-coordinate of the marker
-const y = parseFloat(marker.dataset.y); // Get y-coordinate of the marker
-
-// Find the marker in the markers array (this is your "memory")
-const markerIndex = markers.findIndex(
-    m => m.x === x && m.y === y
-);
-
-if (markerIndex > -1) {
-    // Remove from memory (markers array)
-    markers.splice(markerIndex, 1);
-    saveMarkersToLocalStorage(); // Update localStorage with the modified markers array
-}
-
-// Call the function to delete the marker from the database
-deleteMarkerFromDatabase(x, y);
-
-// Remove from the DOM
-marker.remove();
-}
-
-function deleteMarkerFromDatabase(x, y) {
-// Round to 3 decimal places before sending
-const roundedX = Math.round(x * 1000) / 1000;
-const roundedY = Math.round(y * 1000) / 1000;
-
-console.log('Rounded coordinates sent to server:', { x: roundedX, y: roundedY });
-
-fetch('https://myapp-qlbv.onrender.com/delete-marker', {
-    method: 'DELETE',
-    headers: {
-        'Content-Type': 'application/json',
+        <div id="container">
+            <!-- Checkbox to toggle between add marker and view only -->
+            <div>
+                <input type="checkbox" id="addMarkerCheckbox"> Enable Add Marker
+            </div>
+    
+            <!-- Color Selection Section -->
+            <div class="color-selection">
+                <label id="red"><input type="radio" name="markerColor" value="red" checked>  قطعه عه ردي بو فروتنة </label>
+                <label id="blue"><input type="radio" name="markerColor" value="blue"> قطعة عه ردي هاتية فروتن </label>
+                <label id="green"><input type="radio" name="markerColor" value="green">قطــعة ســند </label>
+                <label id="black"><input type="radio" name="markerColor" value="black">ملاحظــات</label>
+                <label id="orange"><input type="radio" name="markerColor" value="orange">نيف قطــة</label>
+                <label id="pink"><input type="radio" name="markerColor" value="pink">قطــعة عــدم </label>
+            </div>
+    
+            <!-- Map Viewer -->
+            <div id="viewer"></div>
+    
+            <!-- Back to Dashboard Button -->
+            <a href="dashboard.html" class="back-button">Back to Dashboard</a>
+        </div>
+    
+        <script>
+            // Initialize OpenSeadragon viewer
+           // Initialize OpenSeadragon viewer
+let viewer = OpenSeadragon({
+    id: "viewer",
+    prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
+    tileSources: {
+        type: 'image',
+        url: "image/compressed_output.JPG"
     },
-    body: JSON.stringify({ x: roundedX, y: roundedY })
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error('Failed to delete marker from database');
-    }
-    return response.json();
-})
-.then(data => {
-    if (data.message === 'Marker deleted successfully') {
-        console.log('Marker successfully deleted from database');
-    } else {
-        console.error('Error deleting marker from database:', data.message);
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
+    showNavigator: true,
+    animationTime: 0.5,
+    blendTime: 0.1,
+    constrainDuringPan: true,
+    maxZoomPixelRatio: 2,
+    minZoomImageRatio: 0.5,
+    zoomPerClick: 2,
 });
+
+// Function to get selected color for markers
+function getSelectedColor() {
+    const colorInput = document.querySelector('input[name="markerColor"]:checked');
+    return colorInput ? colorInput.value : "red"; // Default to red
 }
 
+// Function to create a marker
+function createMarker(x, y, tooltipText, color, save = true) {
+    const marker = document.createElement("div");
+    marker.classList.add("marker");
+    marker.dataset.x = x;
+    marker.dataset.y = y;
+    marker.style.backgroundColor = color;
 
+    // Tooltip for the marker
+    if (tooltipText) {
+        const tooltip = document.createElement("div");
+        tooltip.classList.add("marker-tooltip");
+        tooltip.textContent = tooltipText;
+        marker.appendChild(tooltip);
+    }
 
+    // Marker click handler to delete the marker
+    marker.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const confirmDelete = confirm("Do you want to delete this marker?");
+        if (confirmDelete) {
+            deleteMarker(marker);
+        }
+    });
 
-// Function to update the markers in localStorage
-function saveMarkersToLocalStorage() {
-localStorage.setItem('markers', JSON.stringify(markers));
+    // Append the marker to the viewer container
+    document.getElementById("viewer").appendChild(marker);
+    updateMarkerPosition(marker);
+
+    // Save to the database if needed
+    if (save) {
+        const markerData = { x, y, tooltip: tooltipText, color };
+        saveMarkerToDatabase(markerData); // Save to database
+    }
 }
 
+// Function to update the marker position based on viewer coordinates
+function updateMarkerPosition(marker) {
+    const imagePoint = new OpenSeadragon.Point(
+        parseFloat(marker.dataset.x),
+        parseFloat(marker.dataset.y)
+    );
+    
+    // Get the coordinates in viewport space and convert them to pixel space
+    const viewportPoint = viewer.viewport.imageToViewportCoordinates(imagePoint);
+    const pixelPoint = viewer.viewport.viewportToViewerElementCoordinates(viewportPoint);
 
-    // Function to update the marker position based on viewer coordinates
-    function updateMarkerPosition(marker) {
-        const imagePoint = new OpenSeadragon.Point(
-            parseFloat(marker.dataset.x),
-            parseFloat(marker.dataset.y)
-        );
-        const viewportPoint = viewer.viewport.imageToViewportCoordinates(imagePoint);
-        const pixelPoint = viewer.viewport.viewportToViewerElementCoordinates(viewportPoint);
+    // Update the marker position in pixels relative to the viewer container
+    marker.style.left = `${pixelPoint.x}px`;
+    marker.style.top = `${pixelPoint.y}px`;
+}
 
-        marker.style.left = `${pixelPoint.x}px`;
-        marker.style.top = `${pixelPoint.y}px`;
+// Function to check if we are in "add marker" mode
+function isAddMarkerMode() {
+    return document.getElementById("addMarkerCheckbox").checked;
+}
+
+// Add marker to the map when clicked
+function addMarker(imagePoint) {
+    if (!isAddMarkerMode()) {
+        return; // If not in add marker mode, return and do nothing
     }
 
-    // Add marker to the map when clicked
-    function addMarker(imagePoint) {
-        const tipText = prompt("Enter a tip for this marker:");
-        if (tipText === null || tipText === "") return; // Cancel adding marker if no input
+    const tipText = prompt("Enter a tip for this marker:");
+    if (tipText === null || tipText === "") return; // Cancel adding marker if no input
 
-        const color = getSelectedColor(); // Get selected color
-        createMarker(imagePoint.x, imagePoint.y, tipText, color);
+    const color = getSelectedColor(); // Get selected color
+    createMarker(imagePoint.x, imagePoint.y, tipText, color);
+}
+
+// Handler for canvas clicks to create markers
+viewer.addHandler("canvas-click", (event) => {
+    const viewportPoint = viewer.viewport.pointFromPixel(event.position);
+    const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+    addMarker(imagePoint);
+});
+
+// Load markers from the database when the viewer is opened
+viewer.addHandler("open", () => {
+    loadMarkersFromDatabase();
+});
+
+// Function to save marker to database
+async function saveMarkerToDatabase(marker) {
+    console.log("Sending marker data:", marker);  // Add this line to debug
+    try {
+        const response = await fetch('http://localhost:3000/save-maping', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(marker)
+        });
+        const result = await response.json();
+        console.log(result.message);
+    } catch (error) {
+        console.error('Error saving marker:', error);
     }
+}
 
-    // Handler for canvas clicks to create markers
-    viewer.addHandler("canvas-click", (event) => {
-        const viewportPoint = viewer.viewport.pointFromPixel(event.position);
-        const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
-        addMarker(imagePoint);
-    });
+// Function to load markers from the database
+async function loadMarkersFromDatabase() {
+    try {
+        const response = await fetch('http://localhost:3000/get-markers');
+        const markersFromDb = await response.json();
+        markersFromDb.forEach(markerData => {
+            createMarker(markerData.x_coordinate, markerData.y_coordinate, markerData.tooltip, markerData.color, false);
+        });
+    } catch (error) {
+        console.error('Error loading markers:', error);
+    }
+}
 
-    // Keep markers positioned correctly on viewport changes
-    viewer.addHandler("viewport-change", () => {
-        document.querySelectorAll(".marker").forEach(updateMarkerPosition);
+// Update marker positions whenever the viewer zooms or pans
+viewer.addHandler("animation", () => {
+    const markers = document.querySelectorAll(".marker");
+    markers.forEach(marker => {
+        updateMarkerPosition(marker); // Recalculate position for each marker
     });
+});
 
-    // Load markers from the database when the viewer is opened
-    viewer.addHandler("open", () => {
-        loadMarkersFromDatabase();
-    });
-    </script>
-</body>
+        </script>
+    </body>
+    
 </html>
